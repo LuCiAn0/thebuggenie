@@ -4666,7 +4666,7 @@
 		}
 		
 		protected function _postSave($is_new)
-		{
+		{			
 			$this->_clearChangedProperties();
 			if (!$is_new && isset($this->comment) && isset($this->comment_lines))
 			{
