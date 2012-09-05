@@ -238,7 +238,7 @@
 				$tty = $this->getTargetType();
 				$tid = $this->getTargetID();
 				if (array_key_exists($tty, self::$_comment_count) && array_key_exists($tid, self::$_comment_count[$tty]) && array_key_exists((int) $this->isSystemComment(), self::$_comment_count[$tty][$tid]))
-					self::$_comment_count[$tty][$tid][(int) $this->isSystemComment()]++;
+					self::$_comment_count[$tty][$tid][(int) $this->isSystemComment()]++;				
 			}
 		}
 		

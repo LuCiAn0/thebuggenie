@@ -204,7 +204,7 @@
 		public function listen_createUser(TBGEvent $event)
 		{
 			$uid = $event->getSubject()->getID();
-			$settings = array(self::NOTIFY_ISSUE_ASSIGNED_UPDATED, self::NOTIFY_ISSUE_ONCE, self::NOTIFY_ISSUE_POSTED_UPDATED, self::NOTIFY_ISSUE_PROJECT_ASSIGNED, self::NOTIFY_ISSUE_RELATED_PROJECT_TEAMASSIGNED, self::NOTIFY_ISSUE_TEAMASSIGNED_UPDATED, self::NOTIFY_ISSUE_COMMENTED_ON);
+			$settings = array(self::NOTIFY_ISSUE_ASSIGNED_UPDATED, self::NOTIFY_ISSUE_UPDATED_SELF, self::NOTIFY_ISSUE_POSTED_UPDATED, self::NOTIFY_ISSUE_PROJECT_ASSIGNED, self::NOTIFY_ISSUE_RELATED_PROJECT_TEAMASSIGNED, self::NOTIFY_ISSUE_TEAMASSIGNED_UPDATED, self::NOTIFY_ISSUE_COMMENTED_ON);
 
 			foreach ($settings as $setting)
 				$this->saveSetting($setting, 1, $uid);
@@ -1089,7 +1089,7 @@ EOT;
 				{
 					$user->setBuddyname($name);
 					$user->setEmail($email);
-					$user->setUsername($email);
+					$user->setUsername($email);					
 					$user->setValidated();
 					$user->setActivated();
 					$user->setEnabled();
@@ -1171,15 +1171,17 @@ EOT;
 							if ($issue instanceof TBGIssue)
 							{
 								$text = preg_replace('#(^\w.+:\n)?(^>.*(\n|$))+#mi', "", $data);
-								$text = trim($text);
+								$text = trim($text);								
 								if (!$this->processIncomingEmailCommand($text, $issue, $user) && $user->canPostComments())
 								{
 									$comment = new TBGComment();
+									$comment->setTitle('Untitled comment');
 									$comment->setContent($text);
 									$comment->setPostedBy($user);
 									$comment->setTargetID($issue->getID());
 									$comment->setTargetType(TBGComment::TYPE_ISSUE);
-									$comment->save();
+									$comment->save();			
+									TBGEvent::createNew('core', 'TBGComment::createNew', $issue, array('comment' => $comment))->trigger();								
 								}
 							}
 							else
