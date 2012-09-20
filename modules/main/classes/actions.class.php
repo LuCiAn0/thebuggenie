@@ -2337,6 +2337,31 @@
 			}
 			$this->return404(TBGContext::getI18n()->__('This file does not exist'));
 		}
+		
+		/**
+		* Prep URL
+		*
+		* Simply adds the http:// part if no scheme is included
+		*
+		* @param	string	the URL
+		* @return	string
+		*/
+		public function prep_url($str = '')
+		{
+		    if ($str == 'http://' OR $str == '')
+		    {
+			return '';
+		    }
+
+		    $url = parse_url($str);
+
+		    if ( ! $url OR ! isset($url['scheme']))
+		    {
+			$str = 'http://'.$str;
+		    }
+
+		    return $str;
+		}
 
 		public function runAttachLinkToIssue(TBGRequest $request)
 		{
@@ -2345,8 +2370,8 @@
 			{
 				if ($request['link_url'] != '')
 				{
-					$link_id = $issue->attachLink($request['link_url'], $request['description']);
-					return $this->renderJSON(array('message' => TBGContext::getI18n()->__('Link attached!'), 'attachmentcount' => (count($issue->getFiles()) + count($issue->getLinks())), 'content' => $this->getTemplateHTML('main/attachedlink', array('issue' => $issue, 'link_id' => $link_id, 'link' => array('description' => $request['description'], 'url' => $request['link_url'])))));
+					$link_id = $issue->attachLink($this->prep_url($request['link_url']), $request['description']);
+					return $this->renderJSON(array('message' => TBGContext::getI18n()->__('Link attached!'), 'attachmentcount' => (count($issue->getFiles()) + count($issue->getLinks())), 'content' => $this->getTemplateHTML('main/attachedlink', array('issue' => $issue, 'link_id' => $link_id, 'link' => array('description' => $request['description'], 'url' => $this->prep_url($request['link_url']))))));
 				}
 				$this->getResponse()->setHttpStatus(400);
 				return $this->renderJSON(array('error' => TBGContext::getI18n()->__('You have to provide a link URL, otherwise we have nowhere to link to!')));
@@ -2373,8 +2398,8 @@
 
 		public function runAttachLink(TBGRequest $request)
 		{
-			$link_id = TBGLinksTable::getTable()->addLink($request['target_type'], $request['target_id'], $request['link_url'], $request->getRawParameter('description'));
-			return $this->renderJSON(array('message' => TBGContext::getI18n()->__('Link added!'), 'content' => $this->getTemplateHTML('main/menulink', array('link_id' => $link_id, 'link' => array('target_type' => $request['target_type'], 'target_id' => $request['target_id'], 'description' => $request->getRawParameter('description'), 'url' => $request['link_url'])))));
+			$link_id = TBGLinksTable::getTable()->addLink($request['target_type'], $request['target_id'], $this->prep_url($request['link_url']), $request->getRawParameter('description'));
+			return $this->renderJSON(array('message' => TBGContext::getI18n()->__('Link added!'), 'content' => $this->getTemplateHTML('main/menulink', array('link_id' => $link_id, 'link' => array('target_type' => $request['target_type'], 'target_id' => $request['target_id'], 'description' => $request->getRawParameter('description'), 'url' => $this->prep_url($request['link_url']))))));
 		}
 
 		public function runRemoveLink(TBGRequest $request)
