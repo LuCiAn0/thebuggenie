@@ -1,6 +1,6 @@
 <?php
 
-	// Set the path to The Bug Genie top folder
+	//Set the path to The Bug Genie top folder
 	$path = realpath(getcwd());
 	defined('DS') || define('DS', DIRECTORY_SEPARATOR);
 	defined('THEBUGGENIE_SESSION_NAME') || define('THEBUGGENIE_SESSION_NAME', 'THEBUGGENIE');
