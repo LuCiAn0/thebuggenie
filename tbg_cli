@@ -1,5 +1,6 @@
 #!/usr/bin/env php
 <?php
+	//fixing bug
 	// Define The Bug Genie paths and related constants
 	define('TBG_CLI', true);
 
